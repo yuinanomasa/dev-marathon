@@ -1,30 +1,36 @@
 const express = require("express");
-const app = express();
-app.use(express.urlencoded({ extended: true }));
-
-const port = 3000;
-
 const cors = require("cors");
-app.use(cors());
-
 const { Pool } = require("pg");
+
+const app = express();
+const port = 5923;
+
+// リクエストの中身を読めるようにする
+app.use(cors());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+// DB接続設定
 const pool = new Pool({
-  user: "user_5923", // PostgreSQLのユーザー名に置き換えてください
+  user: "user_5923",
   host: "postgres",
-  database: "crm_5923", // PostgreSQLのデータベース名に置き換えてください
-  password: "pass_5923", // PostgreSQLのパスワードに置き換えてください
+  database: "crm_5923",
+  password: "pass_5923",
   port: 5432,
 });
 
+// 顧客一覧取得
 app.get("/customers", async (req, res) => {
   try {
     const customerData = await pool.query("SELECT * FROM customers");
     res.send(customerData.rows);
   } catch (err) {
     console.error(err);
-    res.send("Error " + err);
+    res.status(500).send("Error " + err);
   }
 });
+
+// 顧客詳細取得
 app.get("/customer/:customerId", async (req, res) => {
   const customerId = req.params.customerId;
 
@@ -45,20 +51,45 @@ app.get("/customer/:customerId", async (req, res) => {
     res.status(500).send("Error " + err);
   }
 });
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
 
+// 顧客新規追加
 app.post("/add-customer", async (req, res) => {
   try {
     const { companyName, industry, contact, location } = req.body;
+
     const newCustomer = await pool.query(
       "INSERT INTO customers (company_name, industry, contact, location) VALUES ($1, $2, $3, $4) RETURNING *",
       [companyName, industry, contact, location]
     );
+
     res.json({ success: true, customer: newCustomer.rows[0] });
   } catch (err) {
     console.error(err);
     res.json({ success: false });
+  }
+});
+
+// 顧客情報更新
+app.post("/update-customer/:customerId", async (req, res) => {
+  const customerId = req.params.customerId;
+  const { companyName, industry, contact, location } = req.body;
+
+  try {
+    await pool.query(
+      `UPDATE customers
+       SET company_name = $1,
+           industry = $2,
+           contact = $3,
+           location = $4,
+           updated_date = NOW()
+       WHERE customer_id = $5`,
+      [companyName, industry, contact, location, customerId]
+    );
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false });
   }
 });
 

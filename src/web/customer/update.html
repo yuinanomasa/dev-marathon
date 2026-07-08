@@ -47,6 +47,32 @@ fetch(`${config.apiUrl}/customer/${customerId}`)
         console.error(error);
         alert("顧客情報の取得に失敗しました。");
     });
+    document.getElementById("customer-form").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const formData = new URLSearchParams(new FormData(this));
+
+    fetch(`${config.apiUrl}/update-customer/${customerId}`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert("顧客情報を更新しました。");
+            window.location.href = `./detail.html?id=${customerId}`;
+        } else {
+            alert("更新に失敗しました。");
+        }
+    })
+    .catch(error => {
+        console.error(error);
+        alert("エラーが発生しました。");
+    });
+});
     </script>
     <!-- BootstrapのJavaScriptの読み込み -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>

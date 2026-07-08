@@ -3,7 +3,7 @@ services:
     container_name: nginx
     image: nginx:stable-bullseye
     ports:
-      - "80:80"
+      - "1985:80"
     volumes:
       - ./src/web:/usr/share/nginx/html
       - ./work:/work
@@ -14,7 +14,7 @@ services:
     container_name: nodejs
     image: node:22-bullseye
     ports:
-      - "1985:1985"
+      - "3000:3000"
     volumes:
       - ./src/node:/app
       - ./work:/work
@@ -34,6 +34,7 @@ services:
     volumes:
       - ./db:/var/lib/postgresql/data
       - ./work:/work
+      - ./tmp:/tmp
     working_dir: /work
     environment:
       POSTGRES_HOST_AUTH_METHOD: "${POSTGRES_HOST_AUTH_METHOD}"
