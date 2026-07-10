@@ -1,5 +1,5 @@
 const config = {
-  apiUrl: 'http://localhost:3000'
+  apiUrl: 'http://dev.marathon.rplearn.net/api_y_nomasa'
 };
 
 export default config;
