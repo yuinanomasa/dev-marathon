@@ -12,13 +12,12 @@ app.use(express.json());
 
 // DB接続設定
 const pool = new Pool({
-  user: "user_5923",
-  host: "postgres",
-  database: "crm_5923",
-  password: "pass_5923",
+  user: "user_y_nomasa",
+  host: "localhost",
+  database: "db_y_nomasa",
+  password: "5Rw5YDaWc5jc",
   port: 5432,
 });
-
 // 顧客一覧取得
 app.get("/customers", async (req, res) => {
   try {
