@@ -1,0 +1,57 @@
+name: production deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy-staging:
+    runs-on: ubuntu-latest
+    steps:
+      - id: staging-ssh
+        uses: invi5H/ssh-action@v1
+        with:
+          SSH_HOST: ${{ secrets.DEV_SSH_HOST }}
+          SSH_PORT: ${{ secrets.DEV_SSH_PORT }}
+          SSH_USER: ${{ secrets.DEV_SSH_USER }}
+          SSH_KEY: ${{ secrets.DEV_SSHE_SSH_KEY }}
+
+      - name: Deploy to Staging
+        run: |
+          ssh ${{ steps.staging-ssh.outputs.SERVER }} \
+          bash /app/y_nomasa/deploy.sh y_nomasa
+
+  test-staging:
+    needs: deploy-staging
+    runs-on: ubuntu-latest
+    steps:
+      - id: staging-ssh
+        uses: invi5H/ssh-action@v1
+        with:
+          SSH_HOST: ${{ secrets.DEV_SSH_HOST }}
+          SSH_PORT: ${{ secrets.DEV_SSH_PORT }}
+          SSH_USER: ${{ secrets.DEV_SSH_USER }}
+          SSH_KEY: ${{ secrets.DEV_SSHE_SSH_KEY }}
+
+      - name: Run Cypress test
+        run: |
+          ssh ${{ steps.staging-ssh.outputs.SERVER }} \
+          "cd /ci && npx cypress run --spec cypress/e2e/y_nomasa2.cy.js"    
+
+  deploy-production:
+    needs: test-staging
+    runs-on: ubuntu-latest
+    steps:
+      - id: production-ssh
+        uses: invi5H/ssh-action@v1
+        with:
+          SSH_HOST: ${{ secrets.PROD_SSH_HOST }}
+          SSH_PORT: ${{ secrets.PROD_SSH_PORT }}
+          SSH_USER: ${{ secrets.PROD_SSH_USER }}
+          SSH_KEY: ${{ secrets.PROD_SSH_KEY }}                              
+
+      - name: Deploy to Production
+        run: |
+          ssh ${{ steps.production-ssh.outputs.SERVER }} \
+          bash /app/y_nomasa/deploy.sh y_nomasa                            
