@@ -3,20 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>案件情報入力</title>
-    <!-- Bootstrap CSSの読み込み -->
+    <title>案件情報確認</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
 <body>
-    <div class="container mt-5">
-        <!-- ここにHTMLを書く -->
-    </div>
-    <script type="module">
-        <!-- ここにJSを書く -->
-    </script>
-    <!-- BootstrapのJavaScriptの読み込み -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+<div class="container mt-5">
+    <h2 class="mb-4">案件情報を確認してください</h2>
+
+    <table class="table table-bordered">
+        <tr>
+            <th>案件名</th>
+            <td id="caseName"></td>
+        </tr>
+        <tr>
+            <th>案件状態</th>
+            <td id="caseStatus"></td>
+        </tr>
+        <tr>
+            <th>予想収益</th>
+            <td id="expectedRevenue"></td>
+        </tr>
+        <tr>
+            <th>代表者名</th>
+            <td id="representative"></td>
+        </tr>
+    </table>
+
+    <button id="registerBtn" class="btn btn-primary">登録</button>
+    <button id="backBtn" class="btn btn-secondary">戻る</button>
+</div>
+
+<script type="module">
+import config from "../config.js";
+
+const params = new URLSearchParams(location.search);
+
+document.getElementById("caseName").textContent =
+    params.get("caseName");
+
+document.getElementById("caseStatus").textContent =
+    params.get("caseStatus");
+
+document.getElementById("expectedRevenue").textContent =
+    params.get("expectedRevenue");
+
+document.getElementById("representative").textContent =
+    params.get("representative");
+
+document.getElementById("backBtn").addEventListener("click", function() {
+    history.back();
+});
+
+document.getElementById("registerBtn").addEventListener("click", async () => {
+
+    const body = {
+        caseName: params.get("caseName"),
+        caseStatus: params.get("caseStatus"),
+        expectedRevenue: params.get("expectedRevenue"),
+        representative: params.get("representative"),
+        customerId: params.get("customerId")
+    };
+
+    const response = await fetch(`${config.apiUrl}/case`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(body)
+    });
+
+    if (response.ok) {
+        alert("案件を登録しました。");
+        location.href = "./list.html";
+    } else {
+        alert("登録に失敗しました。");
+    }
+});
+</script>
+
 </body>
 </html>

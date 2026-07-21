@@ -53,6 +53,7 @@
 
     <a id="updateLink" class="btn btn-primary" href="#">編集</a>
     <button id="deleteBtn" class="btn btn-danger">削除</button>
+    <a id="caseAddLink" class="btn btn-success" href="#">案件登録</a>
     <a href="./list.html" class="btn btn-secondary">戻る</a>
 
 </div>
@@ -75,6 +76,8 @@ fetch(`${config.apiUrl}/customer/${customerId}`)
     document.getElementById("location").textContent = customer.location;
     document.getElementById("createdDate").textContent = customer.created_date;
     document.getElementById("updatedDate").textContent = customer.updated_date;
+    document.getElementById("caseAddLink").href =
+  `../case/add.html?customerId=${customerId}`;
   })
   .catch(error => {
     console.error(error);

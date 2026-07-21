@@ -91,6 +91,28 @@ app.post("/update-customer/:customerId", async (req, res) => {
     res.status(500).json({ success: false });
   }
 });
+// 案件新規追加
+app.post("/case", async (req, res) => {
+  try {
+    const {
+      caseName,
+      caseStatus,
+      expectedRevenue,
+      representative,
+      customerId,
+    } = req.body;
+
+    const newCase = await pool.query(
+      "INSERT INTO cases (case_name, case_status, expected_revenue, representative, customer_id) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+      [caseName, caseStatus, expectedRevenue, representative, customerId]
+    );
+
+    res.json({ success: true, case: newCase.rows[0] });
+  } catch (err) {
+    console.error(err);
+    res.json({ success: false });
+  }
+});
 
 app.use(express.static("public"));
 

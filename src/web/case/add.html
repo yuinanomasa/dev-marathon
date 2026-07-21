@@ -4,19 +4,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>案件情報入力</title>
-    <!-- Bootstrap CSSの読み込み -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
 <body>
-    <div class="container mt-5">
-        <!-- ここにHTMLを書く -->
-    </div>
-    <script type="module">
-        <!-- ここにJSを書く -->
-    </script>
-    <!-- BootstrapのJavaScriptの読み込み -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<div class="container mt-5">
+
+<h2 class="mb-4">案件情報を入力してください</h2>
+
+<form id="case-form">
+
+<div class="form-group">
+<label for="caseName">案件名</label>
+<input type="text" class="form-control" id="caseName" name="caseName" required>
+</div>
+
+<div class="form-group">
+<label for="caseStatus">案件状態</label>
+<select class="form-control" id="caseStatus" name="caseStatus">
+<option value="新規">新規</option>
+<option value="交渉中">交渉中</option>
+<option value="契約締結">契約締結</option>
+<option value="失注">失注</option>
+</select>
+</div>
+
+<div class="form-group">
+<label for="expectedRevenue">予想収益</label>
+<input type="number" class="form-control" id="expectedRevenue" name="expectedRevenue">
+</div>
+
+<div class="form-group">
+<label for="representative">代表者名</label>
+<input type="text" class="form-control" id="representative" name="representative">
+</div>
+
+<button type="submit" class="btn btn-primary">確認画面へ</button>
+
+</form>
+
+</div>
+<script type="module">
+document.getElementById("case-form").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+    const params = new URLSearchParams(formData);
+
+    const customerId = new URLSearchParams(location.search).get("customerId");
+    params.append("customerId", customerId);
+
+    window.location.href = "./add-confirm.html?" + params.toString();
+});
+</script>
 </body>
 </html>
