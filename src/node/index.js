@@ -68,6 +68,31 @@ app.post("/add-customer", async (req, res) => {
   }
 });
 
+// 顧客ごとの案件一覧取得
+app.get("/cases/:customerId", async (req, res) => {
+  const customerId = req.params.customerId;
+
+  try {
+    const caseData = await pool.query(
+      `SELECT
+         case_id,
+         case_name,
+         case_status,
+         expected_revenue,
+         representative
+       FROM cases
+       WHERE customer_id = $1
+       ORDER BY case_id`,
+      [customerId]
+    );
+
+    res.send(caseData.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error " + err);
+  }
+});
+
 // 顧客情報更新
 app.post("/update-customer/:customerId", async (req, res) => {
   const customerId = req.params.customerId;

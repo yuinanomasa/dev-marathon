@@ -75,7 +75,7 @@ document.getElementById("registerBtn").addEventListener("click", async () => {
 
     if (response.ok) {
         alert("案件を登録しました。");
-        location.href = "./list.html";
+        location.href =  `../customer/detail.html?id=${params.get("customerId")}`;
     } else {
         alert("登録に失敗しました。");
     }

@@ -11,10 +11,11 @@ services:
     tty: true # 開発時のみ有効
 
   app:
+    command: sh -c "npm install && node index.js"
     container_name: nodejs
     image: node:22-bullseye
     ports:
-      - "3000:3000"
+      - "5923:5923"
     volumes:
       - ./src/node:/app
       - ./work:/work

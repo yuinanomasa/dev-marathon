@@ -56,6 +56,24 @@
     <a id="caseAddLink" class="btn btn-success" href="#">案件登録</a>
     <a href="./list.html" class="btn btn-secondary">戻る</a>
 
+    <hr class="my-4">
+
+<h3 class="mb-3">案件一覧</h3>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>案件ID</th>
+            <th>案件名</th>
+            <th>ステータス</th>
+            <th>受注見込額</th>
+            <th>担当者</th>
+        </tr>
+    </thead>
+    <tbody id="caseList">
+    </tbody>
+</table>
+
 </div>
 
 <script type="module">
@@ -63,7 +81,7 @@ import config from "../config.js";
 
 // URLからidを取得
 const params = new URLSearchParams(location.search);
-const customerId = params.get("id");
+const customerId = params.get("id") || params.get("customerId");
 document.getElementById("updateLink").href = `./update.html?id=${customerId}`;
 // APIから顧客情報を取得
 fetch(`${config.apiUrl}/customer/${customerId}`)
@@ -83,6 +101,41 @@ fetch(`${config.apiUrl}/customer/${customerId}`)
     console.error(error);
     alert("顧客情報の取得に失敗しました。");
   });
+
+  // 顧客に紐づく案件一覧を取得
+fetch(`${config.apiUrl}/cases/${customerId}`)
+  .then(response => response.json())
+  .then(cases => {
+    const caseList = document.getElementById("caseList");
+
+    if (cases.length === 0) {
+      caseList.innerHTML = `
+        <tr>
+          <td colspan="5" class="text-center">登録されている案件はありません。</td>
+        </tr>
+      `;
+      return;
+    }
+
+    cases.forEach(caseItem => {
+      const row = document.createElement("tr");
+
+      row.innerHTML = `
+        <td>${caseItem.case_id}</td>
+        <td>${caseItem.case_name}</td>
+        <td>${caseItem.case_status}</td>
+        <td>${caseItem.expected_revenue}</td>
+        <td>${caseItem.representative}</td>
+      `;
+
+      caseList.appendChild(row);
+    });
+  })
+  .catch(error => {
+    console.error(error);
+    alert("案件一覧の取得に失敗しました。");
+  });
+
   document.getElementById("deleteBtn").addEventListener("click", function () {
     alert("削除していいですか？");
 });
