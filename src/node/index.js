@@ -51,6 +51,66 @@ app.get("/customer/:customerId", async (req, res) => {
   }
 });
 
+
+// 顧客削除
+app.delete("/customer/:customerId", async (req, res) => {
+  const customerId = req.params.customerId;
+  const client = await pool.connect();
+
+  try {
+    await client.query("BEGIN");
+
+    // 顧客に紐づく案件の交渉履歴を削除
+    await client.query(
+      `DELETE FROM negotiations
+       WHERE case_id IN (
+         SELECT case_id
+         FROM cases
+         WHERE customer_id = $1
+       )`,
+      [customerId]
+    );
+
+    // 顧客に紐づく案件を削除
+    await client.query(
+      "DELETE FROM cases WHERE customer_id = $1",
+      [customerId]
+    );
+
+    // 顧客を削除
+    const deleteResult = await client.query(
+      "DELETE FROM customers WHERE customer_id = $1 RETURNING *",
+      [customerId]
+    );
+
+    if (deleteResult.rows.length === 0) {
+      await client.query("ROLLBACK");
+
+      return res.status(404).json({
+        message: "削除対象の顧客が見つかりません。"
+      });
+    }
+
+    await client.query("COMMIT");
+
+    res.json({
+      message: "顧客情報を削除しました。"
+    });
+
+  } catch (err) {
+    await client.query("ROLLBACK");
+    console.error("顧客削除エラー:", err);
+
+    res.status(500).json({
+      message: "顧客情報の削除に失敗しました。",
+      error: err.message
+    });
+
+  } finally {
+    client.release();
+  }
+});
+
 // 顧客新規追加
 app.post("/add-customer", async (req, res) => {
   try {
@@ -136,6 +196,28 @@ app.post("/case", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.json({ success: false });
+  }
+});
+
+// 案件詳細取得
+app.get("/case/:caseId", async (req, res) => {
+  const caseId = req.params.caseId;
+
+  try {
+    const caseData = await pool.query(
+      "SELECT * FROM cases WHERE case_id = $1",
+      [caseId]
+    );
+
+    if (caseData.rows.length === 0) {
+      res.status(404).send("Case not found");
+      return;
+    }
+
+    res.send(caseData.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error " + err);
   }
 });
 

@@ -122,8 +122,12 @@ fetch(`${config.apiUrl}/cases/${customerId}`)
 
       row.innerHTML = `
         <td>${caseItem.case_id}</td>
-        <td>${caseItem.case_name}</td>
-        <td>${caseItem.case_status}</td>
+        <td>
+         <a href="../case/detail.html?id=${caseItem.case_id}">
+    ${caseItem.case_name}
+         </a>
+       </td>
+       <td>${caseItem.case_status}</td>
         <td>${caseItem.expected_revenue}</td>
         <td>${caseItem.representative}</td>
       `;
@@ -136,9 +140,40 @@ fetch(`${config.apiUrl}/cases/${customerId}`)
     alert("案件一覧の取得に失敗しました。");
   });
 
-  document.getElementById("deleteBtn").addEventListener("click", function () {
-    alert("削除していいですか？");
+document.getElementById("deleteBtn").addEventListener("click", async function () {
+  const confirmed = confirm(
+    "この顧客情報を削除してもよろしいですか？\n紐づく案件情報も削除されます。"
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `${config.apiUrl}/customer/${customerId}`,
+      {
+        method: "DELETE"
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        result.message || "顧客情報の削除に失敗しました。"
+      );
+    }
+
+    alert("顧客情報を削除しました。");
+    location.href = "./list.html";
+
+  } catch (error) {
+    console.error("顧客削除エラー:", error);
+    alert(error.message);
+  }
 });
+
 </script>
 
 </body>
