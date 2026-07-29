@@ -68,6 +68,7 @@
             <th>ステータス</th>
             <th>受注見込額</th>
             <th>担当者</th>
+	    <th>操作</th>
         </tr>
     </thead>
     <tbody id="caseList">
@@ -130,6 +131,11 @@ fetch(`${config.apiUrl}/cases/${customerId}`)
        <td>${caseItem.case_status}</td>
         <td>${caseItem.expected_revenue}</td>
         <td>${caseItem.representative}</td>
+	 <td>
+           <a href="../case/update.html?id=${caseItem.case_id}" class="btn btn-sm btn-warning">
+             編集
+           </a>
+         </td>
       `;
 
       caseList.appendChild(row);

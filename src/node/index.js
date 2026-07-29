@@ -176,6 +176,42 @@ app.post("/update-customer/:customerId", async (req, res) => {
     res.status(500).json({ success: false });
   }
 });
+
+// 案件情報更新
+app.post("/update-case/:caseId", async (req, res) => {
+  const caseId = req.params.caseId;
+  const {
+    caseName,
+    caseStatus,
+    expectedRevenue,
+    representative
+  } = req.body;
+
+  try {
+    await pool.query(
+      `UPDATE cases
+       SET case_name = $1,
+           case_status = $2,
+           expected_revenue = $3,
+           representative = $4,
+           updated_date = NOW()
+       WHERE case_id = $5`,
+      [
+        caseName,
+        caseStatus,
+        expectedRevenue,
+        representative,
+        caseId
+      ]
+    );
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false });
+  }
+});
+
 // 案件新規追加
 app.post("/case", async (req, res) => {
   try {

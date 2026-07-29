@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>案件詳細</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container mt-5">
+    <h2 class="mb-4">案件詳細</h2>
+
+    <table class="table table-bordered">
+        <tr>
+            <th>案件ID</th>
+            <td id="caseId"></td>
+        </tr>
+        <tr>
+            <th>案件名</th>
+            <td id="caseName"></td>
+        </tr>
+        <tr>
+            <th>ステータス</th>
+            <td id="caseStatus"></td>
+        </tr>
+        <tr>
+            <th>受注見込額</th>
+            <td id="expectedRevenue"></td>
+        </tr>
+        <tr>
+            <th>担当者</th>
+            <td id="representative"></td>
+        </tr>
+        <tr>
+            <th>顧客ID</th>
+            <td id="customerId"></td>
+        </tr>
+        <tr>
+            <th>作成日</th>
+            <td id="createdDate"></td>
+        </tr>
+        <tr>
+            <th>更新日</th>
+            <td id="updatedDate"></td>
+        </tr>
+    </table>
+
+    <a id="backLink" class="btn btn-secondary" href="#">戻る</a>
+</div>
+
+<script type="module">
+import config from "../config.js";
+
+const params = new URLSearchParams(location.search);
+const caseId = params.get("id");
+
+fetch(`${config.apiUrl}/case/${caseId}`)
+  .then(response => {
+    if (!response.ok) {
+      throw new Error("案件情報の取得に失敗しました。");
+    }
+
+    return response.json();
+  })
+  .then(caseData => {
+    document.getElementById("caseId").textContent = caseData.case_id;
+    document.getElementById("caseName").textContent = caseData.case_name;
+    document.getElementById("caseStatus").textContent = caseData.case_status;
+    document.getElementById("expectedRevenue").textContent =
+      caseData.expected_revenue;
+    document.getElementById("representative").textContent =
+      caseData.representative;
+    document.getElementById("customerId").textContent = caseData.customer_id;
+    document.getElementById("createdDate").textContent = caseData.created_date;
+    document.getElementById("updatedDate").textContent = caseData.updated_date;
+
+    document.getElementById("backLink").href =
+      `../customer/detail.html?id=${caseData.customer_id}`;
+  })
+  .catch(error => {
+    console.error(error);
+    alert("案件情報の取得に失敗しました。");
+  });
+</script>
+
+</body>
+</html>

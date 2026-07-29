@@ -9,10 +9,85 @@
 </head>
 <body>
     <div class="container mt-5">
-        <!-- ここにHTMLを書く -->
+   
+<h2 class="mb-4">案件情報を編集してください</h2>
+
+<form id="case-form">
+    <div class="form-group">
+        <label for="caseName">案件名</label>
+        <input type="text" class="form-control" id="caseName" name="caseName" required>
+    </div>
+
+    <div class="form-group">
+        <label for="caseStatus">案件状態</label>
+        <select class="form-control" id="caseStatus" name="caseStatus">
+            <option value="新規">新規</option>
+            <option value="交渉中">交渉中</option>
+            <option value="契約締結">契約締結</option>
+            <option value="失注">失注</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="expectedRevenue">予想収益</label>
+        <input type="number" class="form-control" id="expectedRevenue" name="expectedRevenue">
+    </div>
+
+    <div class="form-group">
+        <label for="representative">代表者名</label>
+        <input type="text" class="form-control" id="representative" name="representative">
+    </div>
+
+    <button type="submit" class="btn btn-primary">更新</button>
+</form>
     </div>
     <script type="module">
-        <!-- ここにJSを書く -->
+   
+import config from "../config.js";
+
+const params = new URLSearchParams(location.search);
+const caseId = params.get("id");
+
+fetch(`${config.apiUrl}/case/${caseId}`)
+    .then(response => response.json())
+    .then(caseData => {
+        document.getElementById("caseName").value = caseData.case_name;
+        document.getElementById("caseStatus").value = caseData.case_status;
+        document.getElementById("expectedRevenue").value = caseData.expected_revenue;
+        document.getElementById("representative").value = caseData.representative;
+    })
+    .catch(error => {
+        console.error(error);
+        alert("案件情報の取得に失敗しました。");
+    });
+
+document.getElementById("case-form").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const formData = new URLSearchParams(new FormData(this));
+
+    fetch(`${config.apiUrl}/update-case/${caseId}`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert("案件情報を更新しました。");
+            window.location.href = `./detail.html?id=${caseId}`;
+        } else {
+            alert("更新に失敗しました。");
+        }
+    })
+    .catch(error => {
+        console.error(error);
+        alert("エラーが発生しました。");
+    });
+});
+
     </script>
     <!-- BootstrapのJavaScriptの読み込み -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
