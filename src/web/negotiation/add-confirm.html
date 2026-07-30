@@ -9,11 +9,90 @@
 </head>
 <body>
     <div class="container mt-5">
-        <!-- ここにHTMLを書く -->
-    </div>
+    
+    <div class="container mt-5">
+    <h2 class="mb-4">商談登録確認</h2>
+
+    <table class="table table-bordered">
+        <tbody>
+            <tr>
+                <th>商談日</th>
+                <td id="negotiationDate"></td>
+            </tr>
+            <tr>
+                <th>商談内容</th>
+                <td id="negotiationContent"></td>
+            </tr>
+            <tr>
+                <th>商談確度</th>
+                <td id="negotiationConfidence"></td>
+            </tr>
+            <tr>
+                <th>担当者</th>
+                <td id="negotiationRepresentative"></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <button id="registerButton" class="btn btn-primary">登録</button>
+    <button id="backButton" class="btn btn-secondary">戻る</button>
+</div>
+
+    
     <script type="module">
-        <!-- ここにJSを書く -->
-    </script>
+    import config from "../config.js";
+    const params = new URLSearchParams(window.location.search);
+
+    const caseId = params.get("caseId");
+    const negotiationDate = params.get("negotiationDate");
+    const negotiationContent = params.get("negotiationContent");
+    const negotiationConfidence = params.get("negotiationConfidence");
+    const negotiationRepresentative =
+        params.get("negotiationRepresentative");
+
+    document.getElementById("negotiationDate").textContent =
+        negotiationDate || "";
+
+    document.getElementById("negotiationContent").textContent =
+        negotiationContent || "";
+
+    document.getElementById("negotiationConfidence").textContent =
+        negotiationConfidence || "";
+
+    document.getElementById("negotiationRepresentative").textContent =
+        negotiationRepresentative || "";
+
+    document.getElementById("backButton").addEventListener("click", () => {
+        window.history.back();
+    });
+
+    document.getElementById("registerButton").addEventListener("click", async () => {
+        const response = await fetch(`${config.apiUrl}/negotiation`, {
+	method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            negotiationDate,
+            negotiationContent,
+            negotiationConfidence: Number(negotiationConfidence),
+            negotiationRepresentative,
+            caseId: Number(caseId)
+        })
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+        alert("商談を登録しました。");
+        window.location.href = `../case/detail.html?id=${caseId}`;
+    } else {
+        alert("商談の登録に失敗しました。");
+    }
+});
+
+  </script>
+
     <!-- BootstrapのJavaScriptの読み込み -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>

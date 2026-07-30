@@ -211,6 +211,45 @@ app.post("/update-case/:caseId", async (req, res) => {
     res.status(500).json({ success: false });
   }
 });
+ // 商談新規追加
+app.post("/negotiation", async (req, res) => {
+  try {
+    const {
+      negotiationDate,
+      negotiationContent,
+      negotiationConfidence,
+      negotiationRepresentative,
+      caseId,
+    } = req.body;
+
+    const newNegotiation = await pool.query(
+      `INSERT INTO negotiations (
+        negotiation_date,
+        negotiation_content,
+        negotiation_confidence,
+        negotiation_representative,
+        case_id
+      )
+      VALUES ($1, $2, $3, $4, $5)
+      RETURNING *`,
+      [
+        negotiationDate,
+        negotiationContent,
+        negotiationConfidence,
+        negotiationRepresentative,
+        caseId,
+      ]
+    );
+
+    res.json({
+      success: true,
+      negotiation: newNegotiation.rows[0],
+    });
+  } catch (err) {
+    console.error(err);
+    res.json({ success: false });
+  }
+});
 
 // 案件新規追加
 app.post("/case", async (req, res) => {
