@@ -47,6 +47,21 @@
         </tr>
     </table>
 
+        <h3 class="mt-5 mb-3">商談一覧</h3>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>商談日</th>
+                <th>商談内容</th>
+                <th>確度</th>
+                <th>担当者</th>
+            </tr>
+        </thead>
+        <tbody id="negotiationList">
+        </tbody>
+    </table>
+
     <a id="negotiationAddLink" class="btn btn-primary" href="#">商談登録</a>
     <a id="backLink" class="btn btn-secondary" href="#">戻る</a>
 </div>
@@ -62,6 +77,44 @@ fetch(`${config.apiUrl}/case/${caseId}`)
     if (!response.ok) {
       throw new Error("案件情報の取得に失敗しました。");
     }
+
+fetch(`${config.apiUrl}/negotiations/${caseId}`)
+  .then(response => {
+    if (!response.ok) {
+      throw new Error("商談一覧の取得に失敗しました。");
+    }
+
+    return response.json();
+  })
+  .then(negotiations => {
+    const negotiationList = document.getElementById("negotiationList");
+
+    if (negotiations.length === 0) {
+      negotiationList.innerHTML = `
+        <tr>
+          <td colspan="4">登録されている商談はありません。</td>
+        </tr>
+      `;
+      return;
+    }
+
+    negotiations.forEach(negotiation => {
+      const row = document.createElement("tr");
+
+      row.innerHTML = `
+        <td>${new Date(negotiation.negotiation_date).toLocaleDateString("ja-JP")}</td>
+        <td>${negotiation.negotiation_content}</td>
+        <td>${negotiation.negotiation_confidence}</td>
+        <td>${negotiation.negotiation_representative}</td>
+      `;
+
+      negotiationList.appendChild(row);
+    });
+  })
+  .catch(error => {
+    console.error(error);
+    alert("商談一覧の取得に失敗しました。");
+  });
 
     return response.json();
   })
