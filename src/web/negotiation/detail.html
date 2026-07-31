@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商談詳細</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container mt-5">
+    <h2 class="mb-4">商談詳細</h2>
+
+    <table class="table table-bordered">
+        <tr>
+            <th>商談ID</th>
+            <td id="negotiationId"></td>
+        </tr>
+        <tr>
+            <th>商談日</th>
+            <td id="negotiationDate"></td>
+        </tr>
+        <tr>
+            <th>商談内容</th>
+            <td id="negotiationContent"></td>
+        </tr>
+        <tr>
+            <th>確度</th>
+            <td id="negotiationConfidence"></td>
+        </tr>
+        <tr>
+            <th>担当者</th>
+            <td id="negotiationRepresentative"></td>
+        </tr>
+        <tr>
+            <th>案件ID</th>
+            <td id="caseId"></td>
+        </tr>
+        <tr>
+            <th>作成日</th>
+            <td id="createdDate"></td>
+        </tr>
+        <tr>
+            <th>更新日</th>
+            <td id="updatedDate"></td>
+        </tr>
+    </table>
+
+    <a id="backLink" class="btn btn-secondary" href="#">戻る</a>
+</div>
+
+<script type="module">
+import config from "../config.js";
+
+const params = new URLSearchParams(location.search);
+const negotiationId = params.get("id");
+
+fetch(`${config.apiUrl}/negotiation/${negotiationId}`)
+  .then(response => {
+    if (!response.ok) {
+      throw new Error("商談情報の取得に失敗しました。");
+    }
+    return response.json();
+  })
+  .then(negotiationData => {
+    document.getElementById("negotiationId").textContent =
+      negotiationData.negotiation_id;
+
+    document.getElementById("negotiationDate").textContent =
+      new Date(negotiationData.negotiation_date).toLocaleDateString("ja-JP");
+
+    document.getElementById("negotiationContent").textContent =
+      negotiationData.negotiation_content;
+
+    document.getElementById("negotiationConfidence").textContent =
+      negotiationData.negotiation_confidence;
+
+    document.getElementById("negotiationRepresentative").textContent =
+      negotiationData.negotiation_representative;
+
+    document.getElementById("caseId").textContent =
+      negotiationData.case_id;
+
+    document.getElementById("createdDate").textContent =
+      negotiationData.created_date;
+
+    document.getElementById("updatedDate").textContent =
+      negotiationData.updated_date;
+
+    document.getElementById("backLink").href =
+      `../case/detail.html?id=${negotiationData.case_id}`;
+  })
+  .catch(error => {
+    console.error(error);
+    alert("商談情報の取得に失敗しました。");
+  });
+</script>
+
+</body>
+</html>

@@ -280,6 +280,35 @@ app.get("/negotiations/:caseId", async (req, res) => {
   }
 });
 
+// 商談IDに紐づく商談詳細取得
+app.get("/negotiation/:negotiationId", async (req, res) => {
+  try {
+    const negotiationId = req.params.negotiationId;
+
+    const negotiation = await pool.query(
+      `SELECT *
+       FROM negotiations
+       WHERE negotiation_id = $1`,
+      [negotiationId]
+    );
+
+    if (negotiation.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "商談が見つかりません",
+      });
+    }
+
+    res.json(negotiation.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      message: "商談詳細の取得に失敗しました",
+    });
+  }
+});
+
 // 案件新規追加
 app.post("/case", async (req, res) => {
   try {

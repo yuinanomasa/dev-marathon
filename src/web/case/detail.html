@@ -103,8 +103,12 @@ fetch(`${config.apiUrl}/negotiations/${caseId}`)
 
       row.innerHTML = `
         <td>${new Date(negotiation.negotiation_date).toLocaleDateString("ja-JP")}</td>
-        <td>${negotiation.negotiation_content}</td>
-        <td>${negotiation.negotiation_confidence}</td>
+        <td>
+  <a href="../negotiation/detail.html?id=${negotiation.negotiation_id}">
+    ${negotiation.negotiation_content}
+  </a>
+</td>
+	<td>${negotiation.negotiation_confidence}</td>
         <td>${negotiation.negotiation_representative}</td>
       `;
 
