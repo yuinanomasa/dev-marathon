@@ -48,6 +48,7 @@
     </table>
 
     <a id="backLink" class="btn btn-secondary" href="#">戻る</a>
+    <a id="updateLink" class="btn btn-primary" href="#">編集</a>
     <button id="deleteButton" type="button" class="btn btn-danger">
     削除
 </button>
@@ -93,6 +94,10 @@ fetch(`${config.apiUrl}/negotiation/${negotiationId}`)
 
     document.getElementById("backLink").href =
       `../case/detail.html?id=${negotiationData.case_id}`;
+    
+
+    document.getElementById("updateLink").href =
+  `./update.html?id=${negotiationData.negotiation_id}`;
   })
   .catch(error => {
     console.error(error);

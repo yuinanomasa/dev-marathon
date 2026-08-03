@@ -211,6 +211,42 @@ app.post("/update-case/:caseId", async (req, res) => {
     res.status(500).json({ success: false });
   }
 });
+
+// 商談情報更新
+app.post("/update-negotiation/:negotiationId", async (req, res) => {
+  const negotiationId = req.params.negotiationId;
+  const {
+    negotiationDate,
+    negotiationContent,
+    negotiationConfidence,
+    negotiationRepresentative
+  } = req.body;
+
+  try {
+    await pool.query(
+      `UPDATE negotiations
+       SET negotiation_date = $1,
+           negotiation_content = $2,
+           negotiation_confidence = $3,
+           negotiation_representative = $4,
+           updated_date = NOW()
+       WHERE negotiation_id = $5`,
+      [
+        negotiationDate,
+        negotiationContent,
+        negotiationConfidence,
+        negotiationRepresentative,
+        negotiationId
+      ]
+    );
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false });
+  }
+});
+
  // 商談新規追加
 app.post("/negotiation", async (req, res) => {
   try {
