@@ -309,6 +309,37 @@ app.get("/negotiation/:negotiationId", async (req, res) => {
   }
 });
 
+// 商談削除
+app.delete("/negotiation/:negotiationId", async (req, res) => {
+  const negotiationId = req.params.negotiationId;
+
+  try {
+    const deleteResult = await pool.query(
+      "DELETE FROM negotiations WHERE negotiation_id = $1 RETURNING *",
+      [negotiationId]
+    );
+
+    if (deleteResult.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "削除対象の商談が見つかりません",
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "商談情報を削除しました",
+      negotiation: deleteResult.rows[0],
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      message: "商談情報の削除に失敗しました",
+    });
+  }
+});
+
 // 案件新規追加
 app.post("/case", async (req, res) => {
   try {

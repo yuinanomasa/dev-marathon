@@ -48,6 +48,9 @@
     </table>
 
     <a id="backLink" class="btn btn-secondary" href="#">戻る</a>
+    <button id="deleteButton" type="button" class="btn btn-danger">
+    削除
+</button>
 </div>
 
 <script type="module">
@@ -95,6 +98,38 @@ fetch(`${config.apiUrl}/negotiation/${negotiationId}`)
     console.error(error);
     alert("商談情報の取得に失敗しました。");
   });
+
+document.getElementById("deleteButton").addEventListener("click", async () => {
+  const confirmed = confirm("この商談情報を削除しますか？");
+
+  if (!confirmed) {
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `${config.apiUrl}/negotiation/${negotiationId}`,
+      {
+        method: "DELETE",
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || "商談情報の削除に失敗しました。");
+    }
+
+    alert("商談情報を削除しました。");
+
+    const caseId = document.getElementById("caseId").textContent;
+    location.href = `../case/detail.html?id=${caseId}`;
+  } catch (error) {
+    console.error(error);
+    alert("商談情報の削除に失敗しました。");
+  }
+});
+
 </script>
 
 </body>
